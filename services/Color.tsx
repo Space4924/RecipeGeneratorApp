@@ -4,6 +4,5 @@ export default{
     SECONDRY:'#fbe1b7',
     GREY:'grey',
     BLACK:"black",
-    BACKGROUNDCOLOR:'#1c2833'
-      
+    BACKGROUNDCOLOR:'#1c2833'  
 }

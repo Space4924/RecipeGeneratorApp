@@ -6,6 +6,7 @@ import Color from '@/services/Color';
 import { FormikHelpers } from 'formik';
 import { useRouter } from 'expo-router';
 import useAuth from '@/hooks/useAuth';
+import useAPI from '@/hooks/useAPI';
 
 
 export default function SignUp() {
@@ -24,7 +25,8 @@ export default function SignUp() {
     console.log(values);
   
     try {
-      const resp = await axios.post('http://10.81.20.135:8001/signin', values);
+      // const resp = await axios.post('http://10.81.19.214:8001/signin', values);
+      const resp=await useAPI('/signin',values);
   
       if (resp.status === 200) {
         Alert.alert('Success', "Signed In Successfully", [{ text: "Ok" }]);

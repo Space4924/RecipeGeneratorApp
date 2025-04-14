@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Color from '@/services/Color';
 import { useRouter } from 'expo-router';
 import useAuth from '@/hooks/useAuth';
+import useAPI from '@/hooks/useAPI';
 
 
 
@@ -46,7 +47,8 @@ export default function SignIn() {
     console.log(values);
 
     try {
-      const resp = await axios.post('http://10.81.20.135:8001/register', values);
+      // const resp = await axios.post('http://10.81.19.214:8001/register', values);
+      const resp=await useAPI('/register',values);
 
       if (resp.status === 201) {
         Alert.alert('Success', 'User registered successfully!', [{ text: 'Ok' }]);
