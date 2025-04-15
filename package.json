@@ -17,7 +17,9 @@
   "dependencies": {
     "@animatereactnative/marquee": "^0.5.2",
     "@expo/react-native-action-sheet": "^4.1.1",
-    "@expo/vector-icons": "^14.0.2",
+    "@expo/vector-icons": "^14.1.0",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-native-fontawesome": "^0.3.2",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",

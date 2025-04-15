@@ -1,16 +1,17 @@
 import axios from "axios";
-const startpoint = "http://10.81.20.147:8001";
+export const startpoint = "http://10.81.24.138:8001";
 
-const useAPI = async (endpoint:string, data:any, ROUTETYPE="post" ) => {
+const useAPI = async (endpoint: string, data: any, ROUTETYPE = "post") => {
+    console.log("data in useAPI" ,data);
     try {
         const resp = await axios({
             method: ROUTETYPE,
-            url: startpoint+endpoint,
+            url: startpoint + endpoint,
             data
-        })  
+        })
         return resp;
     } catch (error) {
-        console.log("API Error:",error);
+        console.log("Error in useAPI: ", error);
         throw error;
     }
 };

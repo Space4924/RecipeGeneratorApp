@@ -6,7 +6,7 @@ const OpenAI = require('openai')
 const User = require('./Schema');
 // const PROMPT = require('../services/PROMPT');
 const bcrypt = require('bcrypt');
-// const axios = require('axios');
+const axios = require('axios');
 
 // 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
 require('dotenv').config();
@@ -56,15 +56,15 @@ app.post('/signin', async (req, resp) => {
 
 
 app.post('/chatapi', async (req, res) => {
+    console.log(req.body?.prompt);
     if (!req.body?.prompt) {
         return res.status(400).json({ error: "Input is required" });
     }
-    // console.log(req.body.prompt);
     try {
         const completion = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.OPENAI2}`,
+                "Authorization": `Bearer ${process.env.OPENAI}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
@@ -88,25 +88,35 @@ app.post('/chatapi', async (req, res) => {
     }
 });
 
+app.post('/photoAPI', async (req, resp) => {
+    console.log("body",req.body)
+    // console.log()
+    console.log(req.body?.ImagePrompt)
+    // console.log(process.env.PhotoAPI)
+    try {
+        const BASE_URL = 'https://aigurulab.tech';
+        const result = await axios.post(BASE_URL + '/api/generate-image',
+            {
+                width: 1024,
+                height: 1024,
+                input: req.body.ImagePrompt,
+                model: 'sdxl',
+                aspectRatio: "1:1"
+            },
+            {
+                headers: {
+                    'x-api-key': process.env.PhotoAPI, // Your API Key
+                    'Content-Type': 'application/json', // Content Type
+                },
+            })
+        console.log(result.data.image)
+        resp.status(201).send(result.data.image);
+    } catch (error) {
+        console.log("Error in photogeneration API: ", error);
+        resp.status(404).send("Error: ", error);
+    }
+})
 
-// app.post('/chatapi', async (req, resp) => {
-// console.log(req.body.input+" " +PROMPT.GENERATE_OPTION_PROMPT);
-//     const openai = new OpenAI({
-//       baseURL: "https://openrouter.ai/api/v1",
-//       apiKey: process.env.OPENAI,
-//     });
-//     const completion = await openai.chat.completions.create({
-//         model: "deepseek/deepseek-r1-distill-qwen-14b:free",
-//         messages: [
-//           {
-//             "role": "user",
-//             "content": `${req.body.input+" " +PROMPT.GENERATE_OPTION_PROMPT}`
-//           }
-//         ],
-//       });
-//       console.log(completion.choices[0].message);
-
-// });
 app.listen(8001, () => {
     console.log('Server at 8001 is started')
 })

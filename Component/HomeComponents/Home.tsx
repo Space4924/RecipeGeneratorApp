@@ -8,6 +8,8 @@ import useAPI from '@/hooks/useAPI';
 import useChatAPI from '@/hooks/useChatAPI';
 import Loader from '@/services/Loader';
 import RecipeScreen from './RecipeShowPage';
+import usePhoto from '@/hooks/usePhoto';
+import DefaultRecipe from './DefaultRecipe';
 
 const i1 = require('../../assets/images/i1.png');
 export default function Home() {
@@ -17,16 +19,22 @@ export default function Home() {
     const [page, setPage] = useState(false);
     const [loading, setLoading] = useState(false);
     const [fullrecipe, setFullRecipe] = useState([]);
+    const [ImageURL,setImageURL]=useState<string>("");
     const [recipeOption, setRecipeOptions] = useState<{ recipeName: string; description: string }[]>([]);
 
     const ShowMore = async (recipe: any) => {
         setValid(true);
         actionSheetRef.current?.hide();
-        const prompt = recipe.description+" " + recipe.recipeName+" " + GENERATE_COMPLETE_RECIPE;
+        const prompt = "recipe Description " +recipe.description+", " +"recipe Name "+ recipe.recipeName+", " + GENERATE_COMPLETE_RECIPE;
         const content = await useChatAPI(prompt);
         console.log(content);
         const recipes = JSON.parse(content);
-        console.log(recipes);
+        console.log("reciep.imagePrompt" +recipes.imagePrompt);
+        const ImagePrompt=recipes.imagePrompt;
+        const ImageURL=await usePhoto(ImagePrompt);
+        console.log(ImageURL);
+        setImageURL(ImageURL?.data);
+        // console.log(recipes);
         setFullRecipe(recipes);
         setValid(false);
         setPage(true);
@@ -36,7 +44,7 @@ export default function Home() {
         setLoading(true);
         if (!input) { Alert.alert("Please Enter Details"); return; }
 
-        const prompt = "User Instruction: " +input+ " prompt: "+ GENERATE_OPTION_PROMPT;
+        const prompt = "User Instruction: " +input+ ", prompt: "+ GENERATE_OPTION_PROMPT;
         console.log(prompt);
         const content = await useChatAPI(prompt);
         console.log("content",content);
@@ -48,6 +56,12 @@ export default function Home() {
     };
     const onClose=()=>{
         setPage(false);
+        actionSheetRef.current?.show();
+    }
+    const CloseTheTerminal=()=>{
+        actionSheetRef.current?.hide();
+        setRecipeOptions([]);
+        setFullRecipe([]);
     }
 
 
@@ -96,11 +110,15 @@ export default function Home() {
                             </Text>
                         )}
                     </View>
+                    <TouchableOpacity onPress={CloseTheTerminal} style={styles.closeBtn}>
+                              <Text style={styles.closeText}>✖ Close</Text>
+                    </TouchableOpacity>
                 </View>
             </ActionSheet>
+            <DefaultRecipe setInput={setInput}/>
 
             {valid && <Loader valid={valid} />} 
-            { page && <RecipeScreen page={page} fullRecipe={fullrecipe} onClose={onClose} />}
+            { page && <RecipeScreen image={ImageURL} page={page} fullRecipe={fullrecipe} onClose={onClose} />}
 
         </View>
     );
@@ -164,6 +182,8 @@ const styles = StyleSheet.create({
     headingTxt: {
         fontSize: 32,
         fontFamily: 'outfit',
+        color:Color.PRIMARY,
+        textAlign:'center',
         marginHorizontal: 'auto',
     },
     recipeOptionContainer: {
@@ -171,6 +191,19 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderRadius: 15,
         marginTop: 15
-    }
+    },
+     closeBtn: {
+        padding: 16,
+        marginTop:18,
+        borderRadius:12,
+        backgroundColor: Color.PRIMARY,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      closeText: {
+        fontSize: 16,
+        color: '#444',
+        fontWeight: '500',
+      },
 
 });

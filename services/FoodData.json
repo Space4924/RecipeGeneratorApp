@@ -1,0 +1,48 @@
+{
+  "foodItems": {
+    "veg": [
+      { "name": "High Protein Breakfast", "iconn": "egg", "details": "Paneer Scramble with Spinach" },
+      { "name": "High Carb Lunch", "iconn": "utensil-spoon", "details": "Vegetable Biryani with Raita" },
+      { "name": "Light Dinner", "iconn": "leaf", "details": "Lentil Soup with Whole Wheat Bread" },
+      { "name": "Healthy Snack", "iconn": "apple-alt", "details": "Fruit Salad with Nuts" },
+      { "name": "Filling Brunch", "iconn": "utensils", "details": "Vegetable and Cheese Sandwich" },
+      { "name": "Another Veg Option", "iconn": "leaf", "details": "Spinach and Corn Curry" },
+      { "name": "Protein Rich Snack", "iconn": "cheese", "details": "Cottage Cheese Cubes" },
+      { "name": "Carb Loaded Meal", "iconn": "pizza-slice", "details": "Vegetable Pasta in White Sauce" },
+      { "name": "Simple Veg Dinner", "iconn": "carrot", "details": "Carrot and Pea Stir-fry" },
+      { "name": "Refreshing Brunch", "iconn": "lemon", "details": "Lemon and Herb Quinoa Salad" },
+      { "name": "Morning Energy Bowl", "iconn": "coffee", "details": "Oatmeal with Berries and Seeds" },
+      { "name": "Spicy Veg Curry", "iconn": "pepper-hot", "details": "Mixed Vegetable Curry with Coconut Milk" },
+      { "name": "Comfort Veg Food", "iconn": "utensils", "details": "Vegetable Pot Pie" },
+      { "name": "Green Power Snack", "iconn": "seedling", "details": "Edamame with Sea Salt" },
+      { "name": "Wholesome Veg Meal", "iconn": "bread-slice", "details": "Whole Wheat Pizza with Veggies" },
+      { "name": "Tangy Veg Delight", "iconn": "lemon", "details": "Chickpea and Tomato Salad" },
+      { "name": "Creamy Veg Soup", "iconn": "utensil-spoon", "details": "Cream of Mushroom Soup" },
+      { "name": "Savory Veg Pancake", "iconn": "cheese", "details": "Vegetable and Herb Pancakes" },
+      { "name": "Hearty Veg Stew", "iconn": "hotjar", "details": "Root Vegetable Stew" },
+      { "name": "Sweet Veg Treat", "iconn": "ice-cream", "details": "Vegan Coconut Ice Cream" }
+    ],
+    "nonVeg": [
+      { "name": "Protein Breakfast", "iconn": "bacon", "details": "Omelette with Chicken Sausages" },
+      { "name": "Carb Lunch", "iconn": "utensil-spoon", "details": "Chicken Fried Rice with Egg" },
+      { "name": "Comfort Dinner", "iconn": "fish", "details": "Grilled Salmon with Roasted Vegetables" },
+      { "name": "Savory Snack", "iconn": "drumstick-bite", "details": "Chicken and Cheese Skewers" },
+      { "name": "Hearty Brunch", "iconn": "hamburger", "details": "Chicken and Bacon Burger" },
+      { "name": "Another Non-Veg Choice", "iconn": "utensils", "details": "Mutton Rogan Josh" },
+      { "name": "Lean Protein Snack", "iconn": "fish", "details": "Grilled Shrimp with Lemon" },
+      { "name": "Rich Carb Meal", "iconn": "pizza-slice", "details": "Chicken Supreme Pizza" },
+      { "name": "Easy Non-Veg Dinner", "iconn": "bone", "details": "Chicken and Potato Stew" },
+      { "name": "Satisfying Brunch", "iconn": "cheese", "details": "Chicken and Waffles" },
+      { "name": "Quick Protein Fix", "iconn": "egg", "details": "Hard-Boiled Eggs" },
+      { "name": "Spicy Non-Veg Dish", "iconn": "pepper-hot", "details": "Spicy Chicken Curry" },
+      { "name": "Classic Non-Veg Meal", "iconn": "utensils", "details": "Grilled Steak with Mashed Potatoes" },
+      { "name": "Seafood Delight", "iconn": "fish", "details": "Pan-Seared Cod with Asparagus" },
+      { "name": "Filling Non-Veg Sandwich", "iconn": "hamburger", "details": "Turkey and Swiss Sandwich" },
+      { "name": "Tangy Non-Veg Salad", "iconn": "leaf", "details": "Chicken Caesar Salad" },
+      { "name": "Warm Non-Veg Soup", "iconn": "utensil-spoon", "details": "Chicken Noodle Soup" },
+      { "name": "Delicious Non-Veg Wrap", "iconn": "utensils", "details": "Beef and Bean Burrito" },
+      { "name": "Flavorful Non-Veg Stir-fry", "iconn": "fire", "details": "Shrimp and Vegetable Stir-fry" },
+      { "name": "Sweet Non-Veg Treat", "iconn": "ice-cream", "details": "Bacon and Maple Ice Cream (Unconventional)" }
+    ]
+  }
+}

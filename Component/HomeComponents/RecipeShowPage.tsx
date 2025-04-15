@@ -13,7 +13,7 @@ import {
 
 const screenWidth = Dimensions.get('window').width;
 
-const RecipeScreen = ({ page, fullRecipe, onClose }: any) => {
+const RecipeScreen = ({ page, fullRecipe, onClose,image='https://plus.unsplash.com/premium_photo-1661762555601-47d088a26b50?q=80&w=2092&auto=format&fit=crop' }: any) => {
   if (!fullRecipe) return null;
 
   const {
@@ -34,10 +34,7 @@ const RecipeScreen = ({ page, fullRecipe, onClose }: any) => {
           <Text style={styles.description}>{description}</Text>
 
           <Image
-            source={{
-              uri:
-                'https://plus.unsplash.com/premium_photo-1661762555601-47d088a26b50?q=80&w=2092&auto=format&fit=crop',
-            }}
+            source={{ uri: image }}
             style={styles.image}
             resizeMode="cover"
           />
@@ -119,7 +116,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: screenWidth - 32,
-    height: 220,
+    height: screenWidth-32,
     borderRadius: 16,
     alignSelf: 'center',
     marginBottom: 20,
