@@ -1,4 +1,5 @@
 const mongoose=require('mongoose');
+const { number } = require('yup');
 const registerSchema = new mongoose.Schema({
     name:String,
     email:String,
@@ -10,6 +11,10 @@ const registerSchema = new mongoose.Schema({
         createdAt: { type: Date, default: Date.now },
       },
     ],
+    credits:{
+      type:Number,
+      default:2
+    }
   
 })
 

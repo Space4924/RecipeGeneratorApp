@@ -76,10 +76,13 @@ const styles = StyleSheet.create({
         padding: 12,
         paddingHorizontal: 20,
         borderRadius: 20,
+        // fontSize:14
     },
     logoutText: {
         color: '#fff',
-        fontWeight: '600',
+        // fontWeight: '600',
+        fontFamily:'outfit',
+        fontSize:18
     },
     modal: {
         justifyContent: 'flex-end',

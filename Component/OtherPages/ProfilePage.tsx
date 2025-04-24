@@ -58,7 +58,7 @@ const ProfileScreen = () => {
       setPhotoURL(uri);
     }
   };
-
+  console.log("credits is ", user);
   const handleLogout = async () => {
     Alert.alert('Confirm Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
@@ -84,78 +84,99 @@ const ProfileScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.innerContainer}>
 
-      
-      <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
-        <Image
-          source={photoURL ? { uri: photoURL } : require('../../assets/images/1.jpg')}
-          style={styles.image}
-        />
-        <View style={styles.avatarAccessory}>
-          <Ionicons name="camera" size={18} color="white" />
+
+        <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
+          <Image
+            source={photoURL ? { uri: photoURL } : require('../../assets/images/1.jpg')}
+            style={styles.image}
+          />
+          <View style={styles.avatarAccessory}>
+            <Ionicons name="camera" size={18} color="white" />
+          </View>
+        </TouchableOpacity>
+
+        <View style={styles.infoCard}>
+          <Text style={styles.label}>Name</Text>
+          {editing ? (
+            <View style={styles.editRow}>
+              <TextInput
+                value={editableName}
+                onChangeText={setEditableName}
+                style={styles.input}
+                placeholder="Enter your name"
+              />
+              <TouchableOpacity onPress={handleNameSave}>
+                <Ionicons name="checkmark" size={24} color="#2ecc71" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity style={styles.editRow} onPress={() => setEditing(true)}>
+              <Text style={styles.text}>{user.name || 'Not Set'}</Text>
+              <Ionicons name="create-outline" size={20} color="#2980b9" />
+            </TouchableOpacity>
+          )}
+
+          <Text style={styles.label}>Email</Text>
+          <Text style={styles.text}>{user.email || 'Not Set'}</Text>
+
+          <Text style={styles.label}>Phone Number</Text>
+          <View style={styles.editRow}>
+            <Text style={styles.text}>
+              {user !== null && (
+                phoneVisible
+                  ? user.phoneNo
+                  : user.phoneNo
+                    ? user.phoneNo.replace(/.(?=.{4})/g, '*')
+                    : 'N/A' // or null, or empty string — your fallback
+              )}
+            </Text>
+            <TouchableOpacity onPress={() => setPhoneVisible(!phoneVisible)}>
+              <Ionicons
+                name={phoneVisible ? 'eye-off-outline' : 'eye-outline'}
+                size={20}
+                color="#555"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.label}>User ID</Text>
+          <Text style={styles.text}>#{user.credits || 'N/A'}</Text>
+        </View>
+        <LogoutSlider />
+      </View>
+      <TouchableOpacity style={styles.buyCreditsButton} onPress={() => router.push('/payment')}>
+        <View style={{ margin: 'auto', flexDirection: 'row', gap: 10 }}>
+          <Ionicons name="card" size={20} color="white" style={styles.icon} />
+          <Text style={styles.buyCreditsText}>Buy Credits</Text>
         </View>
       </TouchableOpacity>
 
-      <View style={styles.infoCard}>
-        <Text style={styles.label}>Name</Text>
-        {editing ? (
-          <View style={styles.editRow}>
-            <TextInput
-              value={editableName}
-              onChangeText={setEditableName}
-              style={styles.input}
-              placeholder="Enter your name"
-            />
-            <TouchableOpacity onPress={handleNameSave}>
-              <Ionicons name="checkmark" size={24} color="#2ecc71" />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity style={styles.editRow} onPress={() => setEditing(true)}>
-            <Text style={styles.text}>{user.name || 'Not Set'}</Text>
-            <Ionicons name="create-outline" size={20} color="#2980b9" />
-          </TouchableOpacity>
-        )}
-
-        <Text style={styles.label}>Email</Text>
-        <Text style={styles.text}>{user.email || 'Not Set'}</Text>
-
-        <Text style={styles.label}>Phone Number</Text>
-        <View style={styles.editRow}>
-          <Text style={styles.text}>
-            {/* { user!==null && ( phoneVisible ? user.phoneNo : user?.phoneNo.replace(/.(?=.{4})/g, '*'))} */}
-            {/* {user.phoneNo} */}
-            {user !== null && (
-              phoneVisible
-                ? user.phoneNo
-                : user.phoneNo
-                  ? user.phoneNo.replace(/.(?=.{4})/g, '*')
-                  : 'N/A' // or null, or empty string — your fallback
-            )}
-          </Text>
-          <TouchableOpacity onPress={() => setPhoneVisible(!phoneVisible)}>
-            <Ionicons
-              name={phoneVisible ? 'eye-off-outline' : 'eye-outline'}
-              size={20}
-              color="#555"
-            />
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.label}>User ID</Text>
-        <Text style={styles.text}>#{user.id?.slice(0, 8) || 'N/A'}</Text>
-      </View>
-
-      {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Ionicons name="log-out-outline" size={20} color="#fff" />
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity> */}
-      <LogoutSlider/>
-      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  icon: {
+    marginRight: 8,  // Optional: space between icon and text
+  },
+  buyCreditsButton: {
+    width: '92%',
+    backgroundColor: '#2980b9',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginTop: 10,
+    gap: 8,
+    flexDirection: 'row',
+    
+  },
+  buyCreditsText: {
+    color: '#fff',
+    fontFamily:'outfit',
+    fontSize: 18,
+    fontWeight: '600',
+  },
   container: {
     paddingTop: 60,
     paddingHorizontal: 20,
@@ -164,10 +185,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // marginVertical:'auto'
   },
-  innerContainer:{
+  innerContainer: {
     paddingTop: 60,
     paddingHorizontal: 20,
-    width:'100%'
+    width: '100%'
   },
   avatarContainer: {
     alignItems: 'center',
