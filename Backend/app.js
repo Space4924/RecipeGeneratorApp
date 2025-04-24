@@ -7,89 +7,153 @@ const User = require('./Schema');
 // const PROMPT = require('../services/PROMPT');
 const bcrypt = require('bcrypt');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const Auth = require('./middleware/authMiddleware')
+const cookieParser = require('cookie-parser')
 
-// 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
+
+app.use(cookieParser())
+
 require('dotenv').config();
 
 mongoose.connect(process.env.DataBaseURL).then(() => console.log("Database connected Succesfully")).catch((err) => console.log(err, "Database not connected"))
 
 const saltRound = 10;
 app.post('/register', async (req, resp) => {
-
-    console.log("Request received:", req.body);
-
-    const { name, email, phoneNo, password } = req.body; // Extract values properly
+    const { name, email, phoneNo, password } = req.body;
 
     try {
-        const OldUser = await User.findOne({ email });
-        if (OldUser) return resp.status(400).json({ message: "User already exists" });
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return resp.status(400).json({ message: "User already exists" });
+        }
 
-        const hashedPassword = await bcrypt.hash(password, saltRound);
-
+        const hashedPassword = await bcrypt.hash(password, 10); // saltRound = 10
         const newUser = new User({ name, email, phoneNo, password: hashedPassword });
         await newUser.save();
 
-        return resp.status(201).json({ status: 'OK', message: 'User Created' });
+        // const token = jwt.sign(
+        //     { id: newUser._id, email: newUser.email },
+        //     process.env.JWT_SECRET || 'your_secret_key',
+        //     { expiresIn: '1d' }
+        // );
+        const token = jwt.sign(
+            { _id: newUser._id, email: newUser.email }, // <== includes _id
+            process.env.JWT_SECRET,
+            { expiresIn: '10d' }
+          );
+
+
+        return resp.status(201).json({
+            status: 'OK',
+            message: 'User created successfully',
+            token,
+            user: req.body
+        });
 
     } catch (error) {
         console.error("Error creating user:", error);
-        return resp.status(500).json({ status: "Error", message: "Internal Server Error", error });
-    }
-});
-
-app.post('/signin', async (req, resp) => {
-    console.log(req.body);
-    return resp.status(200).send("Singin Succesfully");
-    //    try {
-    //     const OldUser=await User.findOne({email:req.body.email});
-    //     console.log(OldUser);
-    //     if(!OldUser)return resp.status(400).send({data:"User Doesn't Exist"});
-    //     const isMatch=await bcrypt.compare(req.body.password,OldUser.password);
-    //     console.log(isMatch);
-    //     if(!isMatch)return resp.status(401).send({data:"Incorrect Password"});
-    //     else return resp.status(200).send({data:"SignIn Successfully"})
-    //    } catch (error) {
-    //     console.log(error);
-    //     resp.status(500).send({status:"Server Error",data:error});
-    //    }
-})
-
-
-app.post('/chatapi', async (req, res) => {
-    console.log(req.body?.prompt);
-    if (!req.body?.prompt) {
-        return res.status(400).json({ error: "Input is required" });
-    }
-    try {
-        const completion = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${process.env.OPENAI}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "model": "google/gemma-3-4b-it:free",
-                "messages": [
-                    {
-                        "role": "user",
-                        content: req.body.prompt
-                    }
-                ],
-                response_format: { type: 'json_object' }
-            })
+        return resp.status(500).json({
+            status: "Error",
+            message: "Internal Server Error",
+            error: error.message
         });
-        const data = await completion.json();
-        console.log(data);
-        res.status(200).send(data);
-
-    } catch (error) {
-        console.error("❌ Error from OpenRouter:", error?.response?.data || error.message);
-        res.status(500).json({ error: "Something went wrong" });
     }
 });
 
-app.post('/photoAPI', async (req, resp) => {
-    console.log("body",req.body)
+
+app.post('/signin', async (req, res) => {
+    const { email, password } = req.body;
+    console.log("1");
+    try {
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials - User not found' });
+        }
+        console.log("2");
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Invalid credentials - Password mismatch' });
+        }
+        console.log("3");
+        const token = jwt.sign(
+            { _id: user._id, email: user.email }, // <== includes _id
+            process.env.JWT_SECRET,
+            { expiresIn: '10d' }
+          );
+        console.log("4");
+        console.log(token);
+
+        res.status(200).json({ message: 'Sign in successful', token, user: user });
+    } catch (error) {
+        console.error('Error during sign in:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
+
+app.post(`/chatapi/:id`, Auth, async (req, res) => {
+    const { id } = req.params;
+    const prompt = req.body?.prompt;
+    const userId = req.user?._id;
+  
+    console.log("id:", id);
+    console.log("prompt:", prompt);
+  
+    if (!prompt) {
+      return res.status(400).json({ error: "Input is required" });
+    }
+  
+    try {
+      const completion = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENAI2}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemma-3-4b-it:free",
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          response_format: { type: "json_object" },
+        }),
+      });
+  
+      const data = await completion.json(); // ✅ FIX: move this up before trying to use `data`
+  
+      // ✅ Only save response to DB if id == '2' and user is authenticated
+      if (id === '2' && userId) {
+        await User.findByIdAndUpdate(
+          userId,
+          {
+            $push: {
+              history: {
+                response: data, // Push full response
+                searchedAt: new Date(),
+              },
+            },
+          },
+          { new: true }
+        );
+      }
+  
+      console.log("Completion response:", data);
+      res.status(200).json(data);
+  
+    } catch (error) {
+      console.error("❌ Error from OpenRouter:", error?.response?.data || error.message);
+      res.status(500).json({ error: "Something went wrong" });
+    }
+  });
+  
+
+app.post('/photoAPI', Auth, async (req, resp) => {
+    console.log("body", req.body)
     // console.log()
     console.log(req.body?.ImagePrompt)
     // console.log(process.env.PhotoAPI)
@@ -116,6 +180,47 @@ app.post('/photoAPI', async (req, resp) => {
         resp.status(404).send("Error: ", error);
     }
 })
+
+app.get('/fetch', Auth, async (req, res) => {
+    console.log("working");
+    try {
+      const userId = req.user._id;
+  
+      const user = await User.findById(userId).select('history'); // only select history field
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.status(200).json(user.history);
+  
+    } catch (error) {
+      console.error("❌ Error fetching user history:", error);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  app.delete('/delete/:index',Auth,async(req,res)=>{
+    const userId = req.user._id;
+    const index = parseInt(req.params.index, 10);
+    console.log(userId,index);
+  
+    try {
+      const user = await User.findById(userId);
+  
+      if (!user || !user.history || index < 0 || index >= user.history.length) {
+        return res.status(404).json({ success: false, message: 'Invalid index or no history found' });
+      }
+  
+      user.history.splice(index, 1);
+      await user.save();
+  
+      res.json({ success: true, message: 'Recipe deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting recipe:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  })
 
 app.listen(8001, () => {
     console.log('Server at 8001 is started')

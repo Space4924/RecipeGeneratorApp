@@ -1,13 +1,12 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, TextInput, View, Pressable, Alert } from 'react-native';
 import { Formik, FormikHelpers } from 'formik';
-import axios from 'axios';
 import * as Yup from 'yup'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Color from '@/services/Color';
 import { useRouter } from 'expo-router';
 import useAuth from '@/hooks/useAuth';
 import useAPI from '@/hooks/useAPI';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -30,8 +29,8 @@ const RegisterSchema = Yup.object().shape({
 })
 
 export default function SignIn() {
-  const {setValid}=useAuth();
-  const router=useRouter();
+  let { setValid } = useAuth();
+  const router = useRouter();
   interface FormValues {
     email: string;
     name: string;
@@ -47,16 +46,14 @@ export default function SignIn() {
     console.log(values);
 
     try {
-      // const resp = await axios.post('http://10.81.19.214:8001/register', values);
-      const resp=await useAPI('/register',values);
-
+      const resp = await useAPI('/register', values);
+      await AsyncStorage.setItem("jwtToken", resp.data.token);
+      await AsyncStorage.setItem("user",JSON.stringify(resp.data.user));
       if (resp.status === 201) {
         Alert.alert('Success', 'User registered successfully!', [{ text: 'Ok' }]);
-        resetForm(); // reset the whole form
+        resetForm();
       }
-      router.push('./home')
-
-
+      router.replace('/tabs/home');
     } catch (error: any) {
       setFieldValue('email', '');
       setFieldValue('password', '');
@@ -66,7 +63,6 @@ export default function SignIn() {
         [{ text: 'OK' }]
       );
       console.log("values");
-
     }
   };
   return (

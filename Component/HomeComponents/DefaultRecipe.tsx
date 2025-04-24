@@ -63,6 +63,7 @@ export default function FoodMenuGrid({setInput}:{setInput:React.Dispatch<React.S
                 keyExtractor={(item) => item.key}
                 renderItem={({ item }) => (
                     <FilterButton
+                
                         label={item.label}
                         isActive={filter === item.key}
                         onPress={() => setFilter(item.key as 'all' | 'veg' | 'nonVeg')}
@@ -85,30 +86,29 @@ export default function FoodMenuGrid({setInput}:{setInput:React.Dispatch<React.S
 const styles = StyleSheet.create({
     container: {
         paddingTop: 10,
-        backgroundColor: '#ebebeb',
-        borderRadius: 10,
-        width: '96%',
+        backgroundColor: Color.BACKGROUNDCOLOR,
+        width: '97%',
         marginHorizontal: 'auto'
     },
     filterBar: {
-        paddingHorizontal: 16,
-        paddingBottom: 16,
+        paddingHorizontal: 12,
+        paddingBottom: 12,
     },
     filterBarContent: {
         flexGrow: 1,
-        // alignItems: 'center',
-        textAlign:'center'
+        alignItems: 'center',
+        // textAlign:'center'
     },
     filterButton: {
-        paddingVertical: 12,
-        paddingHorizontal: 18,
-        borderRadius: 20,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 15,
         backgroundColor: '#eee',
-        marginRight: 15,
+        marginRight: 12,
 
         // height:20
     },
     activeFilterButton: { backgroundColor: '#4CAF50', },
-    filterButtonLabel: { fontSize: 16, color: Color.PRIMARY },
+    filterButtonLabel: { fontSize: 14,padding:4, color: Color.BLACK },
     activeFilterButtonLabel: { color: '#fff' },
 });

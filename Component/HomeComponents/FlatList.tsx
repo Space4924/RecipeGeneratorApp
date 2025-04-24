@@ -3,8 +3,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import React from 'react'
 import Color from '@/services/Color';
 const { width } = Dimensions.get('window');
-const cardWidth = width * 0.45;
-const cardMarginHorizontal = 8;
+const cardWidth = width * 0.44;
+const cardMarginHorizontal = width*0.02;
 interface FoodItemType { name: string; iconn: keyof typeof FontAwesome5.glyphMap; details: string; image?: string; }
 const FoodCard = ({ item, setInput }: { item: FoodItemType, setInput: React.Dispatch<React.SetStateAction<string>> }) => {
     const PutInInput = (item: FoodItemType) => {
@@ -14,7 +14,7 @@ const FoodCard = ({ item, setInput }: { item: FoodItemType, setInput: React.Disp
     return (
         <TouchableOpacity onPress={() => PutInInput(item)} style={styles.foodCard}>
             {item.image && <Image source={{ uri: item.image }} style={styles.cardImage} />}
-            {!item.image && <View style={styles.iconPlaceholder}><FontAwesome5 name={item.iconn} size={30} color="#4CAF50" /></View>}
+            {!item.image && <View style={styles.iconPlaceholder}><FontAwesome5 name={item.iconn} size={28} color="#4CAF50" /></View>}
             <Text style={styles.cardTitle}>{item.name}</Text>
             <Text style={styles.cardDetails} numberOfLines={2} ellipsizeMode="tail">{item.details}</Text>
         </TouchableOpacity>
@@ -26,6 +26,7 @@ export default FoodCard;
 const styles = StyleSheet.create({
     foodCard: {
         width: cardWidth,
+        height:'auto',
         backgroundColor: '#fff',
         borderRadius: 10,
         marginHorizontal: cardMarginHorizontal,

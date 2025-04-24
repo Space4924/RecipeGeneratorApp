@@ -92,7 +92,7 @@ const Section = ({ title, children }: any) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fafafa',
+    backgroundColor: Color.BACKGROUNDCOLOR,
   },
   content: {
     paddingVertical: 24,

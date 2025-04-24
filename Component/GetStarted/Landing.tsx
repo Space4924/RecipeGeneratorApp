@@ -15,6 +15,7 @@ const images = [
     require('../../assets/images/6.jpg'),
 ];
 export default function Landing() {
+    console.log("GetStarted/landing")
     return (
         <GestureHandlerRootView style={styles.container}>
                 <Marquee spacing={10} speed={1} style={{transform:[{rotate:'-5deg'}]}}>

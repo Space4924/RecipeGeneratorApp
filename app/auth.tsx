@@ -6,7 +6,7 @@ import useAuth from '@/hooks/useAuth'
 
 
 export default function auth() {
-    const { valid, setValid } = useAuth();
+    const { valid } = useAuth();
     if (valid) return <SignIn/>; return <SignUp/>
 
 }

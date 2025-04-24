@@ -1,17 +1,17 @@
 import { StyleSheet, Text, View, TextInput, Alert, TouchableOpacity, Pressable } from 'react-native'
 import React from 'react'
 import { Formik } from 'formik';
-import axios from 'axios';
 import Color from '@/services/Color';
 import { FormikHelpers } from 'formik';
 import { useRouter } from 'expo-router';
 import useAuth from '@/hooks/useAuth';
 import useAPI from '@/hooks/useAPI';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function SignUp() {
-  const {setValid}=useAuth();
-  const router=useRouter();
+  const { setValid } = useAuth();
+  const router = useRouter();
   interface FormValues {
     email: string;
     password: string;
@@ -21,23 +21,23 @@ export default function SignUp() {
     formikHelpers: FormikHelpers<FormValues>
   ) => {
     const { resetForm, setFieldValue } = formikHelpers;
-  
-    console.log(values);
-  
+    
     try {
-      // const resp = await axios.post('http://10.81.19.214:8001/signin', values);
-      const resp=await useAPI('/signin',values);
-  
+      const resp = await useAPI('/signin', values);
+      console.log(values);
+      console.log(resp);
+      console.log(resp.data.token);
+      await AsyncStorage.setItem("jwtToken", resp.data.token);
+      await AsyncStorage.setItem('user',JSON.stringify(resp.data.user));
       if (resp.status === 200) {
         Alert.alert('Success', "Signed In Successfully", [{ text: "Ok" }]);
         resetForm();
-      } 
-      router.push('./home')
+      }
+      router.replace('/tabs/home');
     } catch (error: any) {
-      // ✅ Better to use optional chaining and fallback default
       const status = error?.response?.status;
       const message = error?.response?.data?.message || "Something went wrong";
-  
+
       if (status === 400) {
         Alert.alert("Failure", "User Doesn't Exist", [{ text: "OK" }]);
       } else if (status === 401) {
@@ -48,8 +48,8 @@ export default function SignUp() {
       }
     }
   };
-  
- 
+
+
   return (
     <View style={styles.container}>
       <Formik
@@ -67,6 +67,10 @@ export default function SignUp() {
               onBlur={handleBlur('email')}
               value={values.email}
               keyboardType="email-address"
+              scrollEnabled={false} // not needed actually
+              numberOfLines={1}
+              multiline={false}     // Important!
+              textAlignVertical="center"
             />
             {errors.email && touched.email ? (
               <Text style={styles.errorText}>{errors.email}</Text>
@@ -82,7 +86,7 @@ export default function SignUp() {
             {errors.password && touched.password ? (
               <Text style={styles.errorText}>{errors.password}</Text>
             ) : null}
-            <TouchableOpacity style={styles.button} onPress={()=>handleSubmit()}>
+            <TouchableOpacity style={styles.button} onPress={() => handleSubmit()}>
               <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
           </View>
@@ -110,7 +114,7 @@ const styles = StyleSheet.create({
   },
   form: {
     width: '85%',
-    padding: 20,
+    padding: 10,
     borderRadius: 15,
   },
   input: {
@@ -119,7 +123,7 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     marginBottom: 15,
-    color: Color.WHITE
+    color: Color.WHITE,
   },
   button: {
     backgroundColor: '#f39c12',

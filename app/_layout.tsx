@@ -1,30 +1,38 @@
 import Color from "@/services/Color";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import { AuthProvider } from "@/Context/AuthContext";
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+  const router = useRouter();
+  const [loaded] = useFonts({
     'outfit': require('../assets/fonts/Outfit-Regular.ttf'),
     'outfit-dark': require('../assets/fonts/Outfit-Bold.ttf'),
     'outfit-light': require('../assets/fonts/Outfit-Light.ttf'),
   });
-  return <>
+
+  if (!loaded) return null;
+
+  return (
     <AuthProvider>
-      <Stack initialRouteName="index"
+      <StatusBar style="inverted" />
+      <Stack
         screenOptions={{
+          headerShown: false,
           contentStyle: {
-            backgroundColor: Color.BACKGROUNDCOLOR, // this sets background for every screen
+            backgroundColor: Color.BACKGROUNDCOLOR,
           },
-        }}>
-        <StatusBar style="auto" />
-        {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
-        <Stack.Screen name="home" options={{ headerShown: false }} />
+        }}
+      >
+        <Stack.Screen name="starting" />
+        <Stack.Screen name="index" />
+        <Stack.Screen name="auth" />
+        <Stack.Screen name="tabs" />
+
       </Stack>
     </AuthProvider>
-  </>
-
+  );
 }

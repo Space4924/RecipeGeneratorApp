@@ -5,6 +5,7 @@ import Color from '@/services/Color'
 import { useRouter } from 'expo-router'
 
 export default function Second() {
+    console.log("GetStarted/Second");
     const router=useRouter();
     return (
         <View style={styles.container}>
@@ -19,7 +20,7 @@ export default function Second() {
 
 const styles = StyleSheet.create({
     container: {
-        height:'30%',
+        height:'28%',
         justifyContent: 'center'
 
     },

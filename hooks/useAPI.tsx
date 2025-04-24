@@ -1,13 +1,20 @@
 import axios from "axios";
-export const startpoint = "http://10.81.24.138:8001";
+export const startpoint = "http://10.81.19.14:8001";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const useAPI = async (endpoint: string, data: any, ROUTETYPE = "post") => {
-    console.log("data in useAPI" ,data);
+const useAPI = async (endpoint: string, data: any,ROUTETYPE = "POST") => {
+    // console.log(endpoint,"data is",data,"Route",ROUTETYPE)
+    const token = await AsyncStorage.getItem("jwtToken");
+    // console.log(token);
     try {
         const resp = await axios({
             method: ROUTETYPE,
             url: startpoint + endpoint,
-            data
+            data,
+            headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                "Content-Type": "application/json",
+              },
         })
         return resp;
     } catch (error) {

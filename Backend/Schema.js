@@ -3,7 +3,14 @@ const registerSchema = new mongoose.Schema({
     name:String,
     email:String,
     phoneNo:String,
-    password:String
+    password:String,
+    history: [
+      {
+        response: mongoose.Schema.Types.Mixed, // to store the full GPT response
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+  
 })
 
 

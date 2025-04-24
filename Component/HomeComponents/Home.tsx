@@ -1,17 +1,15 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
 import React, { useState, useRef } from 'react';
 import Color from '@/services/Color';
-import axios from 'axios';
 import ActionSheet from "react-native-actions-sheet";
 import {GENERATE_OPTION_PROMPT,GENERATE_COMPLETE_RECIPE} from '../../services/PROMPT'
-import useAPI from '@/hooks/useAPI';
-import useChatAPI from '@/hooks/useChatAPI';
 import Loader from '@/services/Loader';
 import RecipeScreen from './RecipeShowPage';
 import usePhoto from '@/hooks/usePhoto';
 import DefaultRecipe from './DefaultRecipe';
-
+import ChatGPT from '@/hooks/useChatAPI';
 const i1 = require('../../assets/images/i1.png');
+
 export default function Home() {
     const actionSheetRef = useRef(null);
     const [valid, setValid] = useState<boolean>(false);
@@ -26,7 +24,7 @@ export default function Home() {
         setValid(true);
         actionSheetRef.current?.hide();
         const prompt = "recipe Description " +recipe.description+", " +"recipe Name "+ recipe.recipeName+", " + GENERATE_COMPLETE_RECIPE;
-        const content = await useChatAPI(prompt);
+        const content = await ChatGPT(2,prompt);
         console.log(content);
         const recipes = JSON.parse(content);
         console.log("reciep.imagePrompt" +recipes.imagePrompt);
@@ -46,7 +44,7 @@ export default function Home() {
 
         const prompt = "User Instruction: " +input+ ", prompt: "+ GENERATE_OPTION_PROMPT;
         console.log(prompt);
-        const content = await useChatAPI(prompt);
+        const content = await ChatGPT(1,prompt);
         console.log("content",content);
         const recipes = JSON.parse(content);
         console.log(recipes);
@@ -85,7 +83,7 @@ export default function Home() {
                 />
                 <TouchableOpacity disabled={loading} style={styles.btn} onPress={HandleSubmit}>
                     {loading ? <ActivityIndicator size="small" color="#0000ff" /> : <Image source={i1} style={styles.img} />}
-                    <Text style={styles.btnText}>Generate Recipe</Text>
+                    <Text style={styles.btnText}>Generate Recipes</Text>
                 </TouchableOpacity>
             </View>
 
@@ -129,21 +127,22 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     wrapper: {
-        height: 350,
+        height: 300,
         padding: 15,
-        margin: 10,
-        backgroundColor: '#ebebeb',
-        borderRadius: 20,
+        margin: 6,
+        marginTop:38,
+        backgroundColor: Color.BACKGROUNDCOLOR,
+        borderTopRightRadius:20,
+        borderTopLeftRadius:20,
         display: 'flex'
 
     },
     label: {
-        fontSize: 22,
-        fontWeight: '600',
+        fontSize: 18,
+        fontWeight: '700',
+        fontFamily:'outfit',
         color: Color.PRIMARY,
-        marginBottom: 'auto',
-        marginHorizontal: 'auto',
-        marginTop: 'auto',
+        margin:'auto',
         textAlign: 'center',
     },
     input: {
@@ -152,7 +151,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 12,
         fontSize: 16,
-        height: 130,
+        height: 100,
         color: Color.WHITE,
         backgroundColor: Color.BACKGROUNDCOLOR,
     },
@@ -169,18 +168,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 18,
         gap: 10
-
     },
     btnText: {
-        fontSize: 16,
-        fontFamily: 'outfit'
+        fontSize: 17,
+        fontFamily: 'outfit',
+        color:Color.PRIMARY,
+        // fontWeight:'600',
     },
     actionSheetContainer: {
         backgroundColor: '#ebebeb',
         padding: 25
     },
     headingTxt: {
-        fontSize: 32,
+        fontSize: 30,
         fontFamily: 'outfit',
         color:Color.PRIMARY,
         textAlign:'center',
@@ -205,5 +205,4 @@ const styles = StyleSheet.create({
         color: '#444',
         fontWeight: '500',
       },
-
 });
