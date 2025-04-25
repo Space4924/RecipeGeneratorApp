@@ -1,5 +1,4 @@
 const mongoose=require('mongoose');
-const { number } = require('yup');
 const registerSchema = new mongoose.Schema({
     name:String,
     email:String,

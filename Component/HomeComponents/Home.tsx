@@ -2,61 +2,167 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ActivityInd
 import React, { useState, useRef } from 'react';
 import Color from '@/services/Color';
 import ActionSheet from "react-native-actions-sheet";
-import {GENERATE_OPTION_PROMPT,GENERATE_COMPLETE_RECIPE} from '../../services/PROMPT'
+import { GENERATE_OPTION_PROMPT, GENERATE_COMPLETE_RECIPE } from '../../services/PROMPT'
 import Loader from '@/services/Loader';
 import RecipeScreen from './RecipeShowPage';
 import usePhoto from '@/hooks/usePhoto';
 import DefaultRecipe from './DefaultRecipe';
 import ChatGPT from '@/hooks/useChatAPI';
+import { useRouter } from 'expo-router';
 const i1 = require('../../assets/images/i1.png');
 
 export default function Home() {
+    const router=useRouter();
     const actionSheetRef = useRef(null);
     const [valid, setValid] = useState<boolean>(false);
     const [input, setInput] = useState('');
     const [page, setPage] = useState(false);
     const [loading, setLoading] = useState(false);
     const [fullrecipe, setFullRecipe] = useState([]);
-    const [ImageURL,setImageURL]=useState<string>("");
+    const [ImageURL, setImageURL] = useState<string>("");
     const [recipeOption, setRecipeOptions] = useState<{ recipeName: string; description: string }[]>([]);
 
     const ShowMore = async (recipe: any) => {
         setValid(true);
         actionSheetRef.current?.hide();
-        const prompt = "recipe Description " +recipe.description+", " +"recipe Name "+ recipe.recipeName+", " + GENERATE_COMPLETE_RECIPE;
-        const content = await ChatGPT(2,prompt);
-        console.log(content);
-        const recipes = JSON.parse(content);
-        console.log("reciep.imagePrompt" +recipes.imagePrompt);
-        const ImagePrompt=recipes.imagePrompt;
-        const ImageURL=await usePhoto(ImagePrompt);
-        console.log(ImageURL);
-        setImageURL(ImageURL?.data);
-        // console.log(recipes);
-        setFullRecipe(recipes);
-        setValid(false);
-        setPage(true);
-    }
 
-    const HandleSubmit = async () => {
-        setLoading(true);
-        if (!input) { Alert.alert("Please Enter Details"); return; }
-
-        const prompt = "User Instruction: " +input+ ", prompt: "+ GENERATE_OPTION_PROMPT;
-        console.log(prompt);
-        const content = await ChatGPT(1,prompt);
-        console.log("content",content);
-        const recipes = JSON.parse(content);
-        console.log(recipes);
-        setRecipeOptions(recipes);
-        actionSheetRef.current?.show();
-        setLoading(false);
+        try {
+            const prompt ="recipe Description " + recipe.description + ", " + "recipe Name " + recipe.recipeName + ", " + GENERATE_COMPLETE_RECIPE;
+            const content = await ChatGPT(2, prompt);
+            const recipes = JSON.parse(content);
+            const imagePrompt = recipes.imagePrompt;
+            const imageURL = await usePhoto(imagePrompt);
+            console.log("ImageURL:", imageURL);
+            setImageURL(imageURL?.data);
+            setFullRecipe(recipes);
+        } catch (error) {
+            console.error("Error in ShowMore:", error);
+            Alert.alert(
+                "Error",
+                "Buy Few Credits",
+                [
+                  {
+                    text: "Cancel",
+                    style: "cancel",
+                  },
+                  {
+                    text: "Buy",
+                    onPress: () => {
+                        router.push('/payment')
+                    },
+                  },
+                ],
+                { cancelable: true }
+              );
+        } finally {
+            setValid(false);
+            setPage(true);
+        }
     };
-    const onClose=()=>{
+
+
+    // const HandleSubmit = async () => {
+    //     if (!input) {
+    //         Alert.alert("Input Missing", "Please enter recipe details.");
+    //         return;
+    //       }
+        
+    //       setLoading(true);
+        
+    //       try {
+    //         const prompt = "User Instruction: " + input + ", prompt: " + GENERATE_OPTION_PROMPT;
+    //         console.log("Prompt:", prompt);
+        
+    //         const content = await ChatGPT(1, prompt);
+    //         console.log("content", content);
+    //         let recipes;
+    //         try {
+    //             recipes = JSON.parse(content);
+    //           } catch (jsonErr) {
+    //             throw new Error("AI response is not valid JSON.");
+    //           }
+        
+    //         setRecipeOptions(recipes);
+    //         actionSheetRef.current?.show();
+        
+    //       } catch (error) {
+    //         console.error("HandleSubmit error:", error);
+        
+    //         // Optional: check if error is credit-related
+    //         const message = error?.message || error?.toString();
+    //         if (message?.toLowerCase().includes("credits")) {
+    //           Alert.alert(
+    //             "Out of Credits",
+    //             "Buy more credits to generate recipes.",
+    //             [
+    //               { text: "Cancel", style: "cancel" },
+    //               {
+    //                 text: "Buy",
+    //                 onPress: () =>router.push('/payment')
+    //               },
+    //             ]
+    //           );
+    //         } else {
+    //           Alert.alert("Error", "Something went wrong while generating recipes.");
+    //         }
+        
+    //       } finally {
+    //         setLoading(false);
+    //       }
+    // };
+    const HandleSubmit = async () => {
+        if (!input) {
+            Alert.alert("Please Enter Details");
+            return;
+        }
+        
+        const prompt = "User Instruction: " + input + ", prompt: " + GENERATE_OPTION_PROMPT;
+        console.log("Prompt:", prompt);
+        
+        setLoading(true);
+        try {
+          const content = await ChatGPT(1, prompt);
+          console.log("Raw content from ChatGPT:", content);
+      
+          // Check if content is empty or an error message
+          if (!content || typeof content !== 'string') {
+            throw new Error("You Used Your Credit")
+          }
+      
+          // Check if it's valid JSON
+          let recipes;
+          try {
+            recipes = JSON.parse(content);
+            console.log("Parsed recipes:", recipes);
+          } catch (jsonErr) {
+            throw new Error("AI response is not valid JSON.");
+          }
+      
+          setRecipeOptions(recipes);
+          actionSheetRef.current?.show();
+        } catch (error) {
+          console.error("HandleSubmit error:", error);
+      
+          Alert.alert(
+            "Error",
+            error.message || "Something went wrong while generating recipes.",
+            [
+              {
+                text: "Buy Credits",
+                onPress: () => router.push('/payment'),
+              },
+              { text: "Cancel", style: "cancel" },
+            ]
+          );
+        } finally {
+          setLoading(false);
+        }
+      };
+    const onClose = () => {
         setPage(false);
         actionSheetRef.current?.show();
     }
-    const CloseTheTerminal=()=>{
+    const CloseTheTerminal = () => {
         actionSheetRef.current?.hide();
         setRecipeOptions([]);
         setFullRecipe([]);
@@ -109,14 +215,14 @@ export default function Home() {
                         )}
                     </View>
                     <TouchableOpacity onPress={CloseTheTerminal} style={styles.closeBtn}>
-                              <Text style={styles.closeText}>✖ Close</Text>
+                        <Text style={styles.closeText}>✖ Close</Text>
                     </TouchableOpacity>
                 </View>
             </ActionSheet>
-            <DefaultRecipe setInput={setInput}/>
+            <DefaultRecipe setInput={setInput} />
 
-            {valid && <Loader valid={valid} />} 
-            { page && <RecipeScreen image={ImageURL} page={page} fullRecipe={fullrecipe} onClose={onClose} />}
+            {valid && <Loader valid={valid} />}
+            {page && <RecipeScreen image={ImageURL} page={page} fullRecipe={fullrecipe} onClose={onClose} />}
 
         </View>
     );
@@ -130,19 +236,19 @@ const styles = StyleSheet.create({
         height: 300,
         padding: 15,
         margin: 6,
-        marginTop:38,
+        marginTop: 38,
         backgroundColor: Color.BACKGROUNDCOLOR,
-        borderTopRightRadius:20,
-        borderTopLeftRadius:20,
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
         display: 'flex'
 
     },
     label: {
         fontSize: 18,
         fontWeight: '700',
-        fontFamily:'outfit',
+        fontFamily: 'outfit',
         color: Color.PRIMARY,
-        margin:'auto',
+        margin: 'auto',
         textAlign: 'center',
     },
     input: {
@@ -172,7 +278,7 @@ const styles = StyleSheet.create({
     btnText: {
         fontSize: 17,
         fontFamily: 'outfit',
-        color:Color.PRIMARY,
+        color: Color.PRIMARY,
         // fontWeight:'600',
     },
     actionSheetContainer: {
@@ -182,8 +288,8 @@ const styles = StyleSheet.create({
     headingTxt: {
         fontSize: 30,
         fontFamily: 'outfit',
-        color:Color.PRIMARY,
-        textAlign:'center',
+        color: Color.PRIMARY,
+        textAlign: 'center',
         marginHorizontal: 'auto',
     },
     recipeOptionContainer: {
@@ -192,17 +298,17 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginTop: 15
     },
-     closeBtn: {
+    closeBtn: {
         padding: 16,
-        marginTop:18,
-        borderRadius:12,
+        marginTop: 18,
+        borderRadius: 12,
         backgroundColor: Color.PRIMARY,
         alignItems: 'center',
         justifyContent: 'center',
-      },
-      closeText: {
+    },
+    closeText: {
         fontSize: 16,
         color: '#444',
         fontWeight: '500',
-      },
+    },
 });

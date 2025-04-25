@@ -55,8 +55,8 @@ export default function SignIn() {
       }
       router.replace('/tabs/home');
     } catch (error: any) {
-      setFieldValue('email', '');
-      setFieldValue('password', '');
+      // setFieldValue('email', '');
+      // setFieldValue('password', '');
       Alert.alert(
         'Error',
         error.response?.data?.message || 'Something went wrong',

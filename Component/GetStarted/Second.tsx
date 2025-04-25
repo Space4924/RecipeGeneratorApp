@@ -1,10 +1,31 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Color from '@/services/Color'
 // import { useRoute } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
+import useAPI from '@/hooks/useAPI';
 
 export default function Second() {
+    const [connected, setConnected] = useState<boolean | null>(null);
+    useEffect(() => {
+        const checkConnection = async () => {
+          try {
+            const res = await useAPI('/health', {}, 'GET');
+            console.log(res);
+            console.log("working");
+            if (res.data?.status === 'ok') {
+              setConnected(true);
+            } else {
+              setConnected(false);
+            }
+          } catch (err) {
+            setConnected(false);
+          }
+        };
+    
+        checkConnection();
+      }, []);
+      console.log("connected",connected);
     console.log("GetStarted/Second");
     const router=useRouter();
     return (

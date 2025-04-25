@@ -1,4 +1,3 @@
-
 {
   "expo": {
     "name": "Cooking_Recipe",
@@ -10,7 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "extra": {
-      "openrouterApiKey": "${process.env.OPENROUTER_API_KEY}"
+      "openrouterApiKey": "${process.env.OPENROUTER_API_KEY}",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "ba226777-74db-48d3-82c2-97ebcbb4eb8b"
+      }
     },
     "ios": {
       "supportsTablet": true
@@ -19,7 +24,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.bhoooendra.Cooking_Recipe"
     },
     "web": {
       "bundler": "metro",
